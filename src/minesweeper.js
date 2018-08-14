@@ -1,17 +1,15 @@
 class MineGrid {
-  
   constructor(rowSize, mineRatio) {
     this.rowSize = rowSize;
     this.gridSize = rowSize * rowSize;
     this.mineRatio = mineRatio;
     this.numMines = Math.floor(this.gridSize * this.mineRatio);
     this.reveals = {};
-    this.mines = this.genMines();
+    this.mines = this.generateMines();
   }
 
-  
-
-  adjacents(guess) {
+  // Determine all valid adjacent yx coordinates when passed a guess in yx coordinates
+  getAdjacentSquares(guess) {
     let gx = guess[0];
     let gy = guess[1];
 
@@ -36,7 +34,8 @@ class MineGrid {
     });
   }
 
-  genMines() {
+  //Generate a random set of mines based on the number of mines configured
+  generateMines() {
     var mines = new Set();
 
     while (mines.size < this.numMines) {
@@ -46,37 +45,22 @@ class MineGrid {
     return mines;
   }
 
-  printReveals() {
-    var line = "";
-
-    for (var i = 0; i < this.gridSize; i++) {
-      if (i in this.reveals) {
-        line = line + this.reveals[i];
-      } else if (this.mines.has(i)) {
-        line = line + "m";
-      } else {
-        line = line + "?";
-      }
-      if ((i + 1) % this.rowSize == 0) {
-        console.log('line is ' + line);
-        line = "";
-      }
-    }
-  }
-
-  mineXY(pos) {
+  //given an absolute position in the grid this will return an array of yx coordinates
+  mineYX(pos) {
     let y = Math.floor(pos / this.rowSize);
     let x = pos % this.rowSize;
     return [y, x];
   }
 
+  // Returns an absolute position in the grid when given an array of yx coordinates
   minePos(yx) {
     return yx[0] * this.rowSize + yx[1];
   }
 
+  // Return the number of adjacent mines when passed in an array of yx coordinates
   numAdjacentMines(guess) {
     var numAdj = 0;
-    var adj = this.adjacents(guess);
+    var adj = this.getAdjacentSquares(guess);
     for (var i = 0; i < adj.length; i++) {
       if (this.mines.has(this.minePos(adj[i]))) {
         numAdj++;
@@ -85,62 +69,54 @@ class MineGrid {
     return numAdj;
   }
 
-  revealMine(guess) {
+  // This gets called when the mouse is clicked on a square
+  // If a square has a mine, the game is lost. If it doesn't the number of mines adjacent to the clicked square will be displayed.
+  // If there are no adjacent mines all ajdacent squares mine counts will be displayed.
+  processGuess(guess) {
     if (guess in this.reveals) {
       return;
     }
-    let na = this.numAdjacentMines(this.mineXY(guess));
+    let na = this.numAdjacentMines(this.mineYX(guess));
     this.reveals[guess] = na;
     if (na == 0) {
-      let adj = this.adjacents(this.mineXY(guess));
+      let adj = this.getAdjacentSquares(this.mineYX(guess));
       for (var i = 0; i < adj.length; i++) {
-        this.revealMine(this.minePos(adj[i]));
+        this.processGuess(this.minePos(adj[i]));
       }
     }
   }
 }
 
-var lostGame = false;
-var lostGuess = 0;
-
-renderSquares(64);
-
+// create divs for the minegrid styled by minesweeper.css
 function renderSquares(numsquares) {
-  for (var i = 0; i < numsquares; i++) {
+  for (let i = 0; i < numsquares; i++) {
     var idiv = document.createElement("div");
     idiv.className = "square";
-    idiv.internalId = i;
     idiv.innerText = "?";
     idiv.onclick = function() {
-      handleClick(this.internalId);
+      handleClick(i);
     };
     document.getElementById("container").appendChild(idiv);
   }
 }
-// if (
-//   Object.keys(this.reveals).length >=
-//   this.gridSize - this.mines.length
-// ) {
-//   console.log("you win no more mines");
-//   return;
-function handleClick(id) {
-  console.log(id);
-  console.log(mg.mines);
 
+// The game is won when revealed squares + number of mines = gridsize
+
+function handleClick(id) {
   if (mg.mines.has(id)) {
     lostGame = true;
     lostGuess = id;
   } else {
-    mg.revealMine(id);
+    mg.processGuess(id);
   }
   renderReveals();
 }
 
-var mg = new MineGrid(8, 0.2);
-
+// Use the reveals array to send the changes to the grid to the DOM
 function renderReveals() {
   const container = document.getElementById("container");
-  for (var i = 0; i < mg.gridSize; i++) {
+
+  for (let i = 0; i < mg.gridSize; i++) {
     if (i in mg.reveals) {
       container.children[i].innerHTML =
         mg.reveals[i] == 0 ? '<i class="fas fa-expand"></i>' : mg.reveals[i];
@@ -148,6 +124,8 @@ function renderReveals() {
       if (lostGuess > -1 && i === lostGuess) {
         lostGuess = -1;
         container.children[i].classList.toggle("squareLose");
+        container.children[i].classList.toggle("redsq");
+        document.querySelector("body").classList.toggle("lostGame");
       }
       container.children[i].innerHTML = lostGame
         ? '<i class="fas fa-bomb"></i>'
@@ -157,3 +135,9 @@ function renderReveals() {
     }
   }
 }
+
+var lostGame = false;
+var lostGuess = 0;
+
+renderSquares(64);
+var mg = new MineGrid(8, 0.2);

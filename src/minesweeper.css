@@ -1,21 +1,20 @@
 body {
-  background: linear-gradient(
-    to right,
-    #2bc0e4,
-    #eaecc6
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-h1 {
-  font-family: "Faster One", cursive;
- 
-  text-align: center;
-}
-@media screen and (min-width: 600px ) {
-  h1 {
-  font-size: 4em;
-  }
+  background: linear-gradient(to right, #2bc0e4, #eaecc6);
 }
 
+.lostGame {
+  background: linear-gradient(to right, #f70318, #eca407);
+}
+
+h1 {
+  font-family: "Faster One", cursive;
+  text-align: center;
+}
+@media screen and (min-width: 600px) {
+  h1 {
+    font-size: 4em;
+  }
+}
 .square {
   color: #2bb9e4;
   width: 11%;
@@ -91,7 +90,7 @@ h1 {
   }
 }
 .redsq {
-  background: purple;
+  color: red;
 }
 #bigcont {
   max-width: 800px;

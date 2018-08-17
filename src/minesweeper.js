@@ -108,6 +108,9 @@ function handleClick(id) {
     lostGuess = id;
   } else {
     mg.processGuess(id);
+    if (Object.keys(mg.reveals).length + mg.mines.size === mg.gridSize) {
+      wonGame = true;
+    }
   }
   renderReveals();
 }
@@ -115,6 +118,10 @@ function handleClick(id) {
 // Use the reveals array to send the changes to the grid to the DOM
 function renderReveals() {
   const container = document.getElementById("container");
+
+  if (wonGame) {
+    document.querySelector("body").classList.toggle("wonGame");
+  }
 
   for (let i = 0; i < mg.gridSize; i++) {
     if (i in mg.reveals) {
@@ -138,6 +145,7 @@ function renderReveals() {
 
 var lostGame = false;
 var lostGuess = 0;
+var wonGame = false;
 
 renderSquares(64);
 var mg = new MineGrid(8, 0.2);

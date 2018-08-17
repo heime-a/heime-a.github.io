@@ -10,7 +10,9 @@ body {
 .lostGame {
   background: linear-gradient(to right, #f70318, #eca407);
 }
-
+.wonGame {
+  background: linear-gradient(to right, #2aa745, #7a7c85);
+}
 h1 {
   font-family: "Faster One", cursive;
   text-align: center;
@@ -22,16 +24,16 @@ h1 {
 }
 .square {
   color: #2bb9e4;
-  width: 11%;
+  width: 22%;
   background: rgb(20, 5, 71);
-  padding-bottom: 4%;
-  padding-top: 4%;
+  padding-bottom: 8%;
+  padding-top: 8%;
   float: left;
   margin: 0.4%;
   border-radius: 15%;
   text-align: center;
   transition: background 0.3s;
-  font-size: 1em;
+  font-size: 1.5em;
   --webkit-transition: background 0.6s;
   --moz-transition: background 0.6s;
 }

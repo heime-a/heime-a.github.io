@@ -6,6 +6,14 @@ class MineGrid {
     this.numMines = Math.floor(this.gridSize * this.mineRatio);
     this.reveals = {};
     this.mines = this.generateMines();
+    this.lostGame = false;
+    this.lostGuess = 0;
+    this.wonGame = false;
+    this.firstGuess = true;
+  }
+
+  gridSize() {
+    return this.rowSize ** 2;
   }
 
   // Determine all valid adjacent yx coordinates when passed a guess in yx coordinates
@@ -70,8 +78,10 @@ class MineGrid {
   }
 
   // This gets called when the mouse is clicked on a square
-  // If a square has a mine, the game is lost. If it doesn't the number of mines adjacent to the clicked square will be displayed.
-  // If there are no adjacent mines all ajdacent squares mine counts will be displayed.
+  // If a square has a mine, the game is lost. If a square does't have a mine
+  // the number of mines adjacent to the clicked square will be displayed.
+  // If there are no adjacent mines all the ajdacent squares mine counts will be displayed.
+  // This function is recursively called for all adjacent squares if there are no adjacent mines to the guess.
   processGuess(guess) {
     if (guess in this.reveals) {
       return;
@@ -103,13 +113,18 @@ function renderSquares(numsquares) {
 // The game is won when revealed squares + number of mines = gridsize
 
 function handleClick(id) {
+  if ((mg.firstGuess === undefined || mg.firstGuess) && mg.mines.has(id)) {
+    mg.mines.delete(id);
+  }
+  mg.firstGuess = false;
+
   if (mg.mines.has(id)) {
-    lostGame = true;
-    lostGuess = id;
+    mg.lostGame = true;
+    mg.lostGuess = id;
   } else {
     mg.processGuess(id);
     if (Object.keys(mg.reveals).length + mg.mines.size === mg.gridSize) {
-      wonGame = true;
+      mg.wonGame = true;
     }
   }
   renderReveals();
@@ -119,7 +134,7 @@ function handleClick(id) {
 function renderReveals() {
   const container = document.getElementById("container");
 
-  if (wonGame) {
+  if (mg.wonGame) {
     document.querySelector("body").classList.toggle("wonGame");
   }
 
@@ -128,13 +143,12 @@ function renderReveals() {
       container.children[i].innerHTML =
         mg.reveals[i] == 0 ? '<i class="fas fa-expand"></i>' : mg.reveals[i];
     } else if (mg.mines.has(i)) {
-      if (lostGuess > -1 && i === lostGuess) {
-        lostGuess = -1;
+      if (mg.lostGame && i === mg.lostGuess) {
+        mg.lostGuess = -1;
         container.children[i].classList.toggle("squareLose");
-        container.children[i].classList.toggle("redsq");
         document.querySelector("body").classList.toggle("lostGame");
       }
-      container.children[i].innerHTML = lostGame
+      container.children[i].innerHTML = mg.lostGame
         ? '<i class="fas fa-bomb"></i>'
         : "?";
     } else {
@@ -143,9 +157,8 @@ function renderReveals() {
   }
 }
 
-var lostGame = false;
-var lostGuess = 0;
-var wonGame = false;
-
-renderSquares(64);
+function playGame() {
+  renderSquares(64);
+}
 var mg = new MineGrid(8, 0.2);
+playGame();

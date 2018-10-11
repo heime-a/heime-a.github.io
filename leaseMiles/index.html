@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Elm App</title>
+</head>
+<body>
+    <div id="elm-code-is-loaded-here"></div>
+    <script src="./elm.js"></script>
+
+    <script>
+
+        const startDate = localStorage.getItem('LeaseCalcStartDate')
+        const milesPerYear = localStorage.getItem('LeaseCalcMilesPerYear')
+        const today = new Date()
+        const todStr = today.toISOString().substring(0,10)
+        const dates = [startDate === null ? "" : startDate, todStr, milesPerYear === null ? "" : milesPerYear ]
+        const app = Elm.Main.init({flags: dates});
+
+
+        app.ports.saveLocal.subscribe(function (startDate) {
+            localStorage.setItem('LeaseCalcStartDate', startDate);
+            console.log(`StartDate: ${startDate}`);
+        });
+        app.ports.saveMiles.subscribe(function (milesPerYear) {
+                localStorage.setItem('LeaseCalcMilesPerYear', milesPerYear);
+                console.log(`MilesPerYear: ${milesPerYear}`);
+        });
+
+    </script>   <div id="root"></div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+
+
+h1 {
+  font-size: 40px;
+}
+
+img {
+  margin: 20px 0;
+  max-width: 200px;
+}
+
+input {
+  font-size: 35px;
+}
+div {
+  font-size:35px;
+}
+
+body {
+  background: linear-gradient(to right, #2bc0e4, #eaecc6);
+}

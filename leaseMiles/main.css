@@ -1,7 +1,7 @@
 
 
 h1 {
-  font-size: 40px;
+  font-size: 4em;
 }
 
 img {
@@ -18,4 +18,16 @@ div {
 
 body {
   background: linear-gradient(to right, #2bc0e4, #eaecc6);
+}
+
+@media screen and (min-width: 600px) {
+  h1 {
+    font-size: 2em;
+  }
+  input {
+    font-size: 35px;
+  }
+  div {
+    font-size:35px;
+  }
 }
